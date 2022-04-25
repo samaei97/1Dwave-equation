@@ -1,0 +1,186 @@
+import numpy as np 
+import matplotlib.pyplot as plt
+from numpy import sin ,pi
+'''solving linear wave equation: du/dt+alpha*du/dx=0 with 3 different initian condition
+and 4 different CFD Schemes(Upwind,Lax,Laxwendroff,MacCormack)'''
+#discretize eqn. and solve using upwind scheme 
+'''to use this code you can call each method by scheme(nu,dt,alpha,ic=''). 
+nu is cfl number = alpha*dt/dx   ,dt is timestep, alpha is constant=0.5 and 
+ic='a' or 'b' or 'c' selects initial condition .   '''
+def upwind(nu,dt,alpha=0.5,ic='a'):
+    dx=alpha*dt/nu #spacestep
+    nt=int(np.around(1/dt))  #number of time grid points 
+    nx=int(np.around(1/dx))  # number of spatial grid points
+    t=np.linspace(0,1,nt+1)  #time grid
+    x=np.linspace(0,1,nx+1)  #space grid 
+    u=np.zeros((nt+1,nx+1))  #initial values of solution =0
+    # set initial conditions 
+    for i in range (nx):
+        if ic =='a' or ic =='A' :
+            
+            if x[i]>=0 and x[i]<0.25:
+                u[0,i]=1
+            else:
+                u[0,i]=0
+        if ic=='b' or ic =='B':
+            u[0,i]=sin(4*pi*x[i])
+        if ic=='c' or ic=='C':
+            if x[i]>=0.0 and x[i]<0.2:
+                u[0,i]=0
+            elif x[i]>=0.2 and x[i]<0.3:
+                u[0,i]=1
+            elif x[i]>=0.3:
+                u[0,i]=0
+    for j in  range(0,nt):
+        for i in range(1,nx):
+            u[j+1,i] = u[j,i]-nu*(u[j,i]-u[j,i-1])
+       
+    plt.plot(x,u[-1,:],label='upwind') #plots u at time=1.0 
+    return u
+#discretize eqn. and solve using laxwendroff scheme 
+def laxwendroff(nu,dt,alpha=0.5,ic='a'):
+    dx=alpha*dt/nu #spacestep
+    nt=int(np.around(1/dt))  #number of time grid points 
+    nx=int(np.around(1/dx))  # number of spatial grid points
+    t=np.linspace(0,1,nt+1)  #time grid
+    x=np.linspace(0,1,nx+1)  #space grid 
+    u=np.zeros((nt+1,nx+1))  #initial values of solution =0
+    # set initial conditions 
+    for i in range (nx):
+        if ic =='a' or ic =='A' :
+        
+            if x[i]>=0 and x[i]<0.25:
+                u[0,i]=1
+            else:
+                u[0,i]=0
+        if ic=='b' or ic =='B':
+            u[0,i]=sin(4*pi*x[i])
+        if ic=='c' or ic=='C':
+            if x[i]>=0 and x[i]<0.2:
+                u[0,i]=0
+            elif x[i]>=0.2 and x[i]<0.3:
+                u[0,i]=1
+            elif x[i]>=0.3:
+                u[0,i]=0
+    for j in  range(nt):
+        for i in range(0,nx):
+            u[j+1,i]=u[j,i]-0.5*nu*(u[j,i+1]-u[j,i-1])+0.5*(nu**2)*(u[j,i+1]-2*u[j,i]+u[j,i-1])
+    plt.plot(x,u[-1,:],label='lax-wendroff') #plots u at time=1.0 
+    return u
+#discretize eqn. and solve using lax scheme     
+def lax(nu,dt,alpha=0.5,ic='a'):
+    dx=alpha*dt/nu #spacestep
+    nt=int(np.around(1/dt))  #number of time grid points 
+    nx=int(np.around(1/dx))  # number of spatial grid points
+    t=np.linspace(0,1,nt+1)  #time grid
+    x=np.linspace(0,1,nx+1)  #space grid 
+    u=np.zeros((nt+1,nx+1))  #initial values of solution =0
+    # set initial conditions 
+    for i in range (nx):
+        if ic =='a' or ic =='A' :
+        
+            if x[i]>=0 and x[i]<0.25:
+                u[0,i]=1
+            else:
+                u[0,i]=0
+        if ic=='b' or ic =='B':
+            u[0,i]=sin(4*pi*x[i])
+        if ic=='c' or ic=='C':
+            if x[i]>=0 and x[i]<0.2:
+                u[0,i]=0
+            elif x[i]>=0.2 and x[i]<0.3:
+                u[0,i]=1
+            elif x[i]>=0.3:
+                u[0,i]=0
+    for j in  range(nt):
+        for i in range (nx):
+
+            u[j+1,i]=-0.5*nu*(u[j,i+1]-u[j,i-1])+0.5*(u[j,i+1]+u[j,i-1])
+    plt.plot(x,u[-1,:],label='lax') #plots u at time=1.0 
+    return u
+#discretize eqn. and solve using maccormack scheme   
+def mccormack(nu,dt,alpha=0.5,ic='a'):
+    dx=alpha*dt/nu #spacestep
+    nt=int(np.around(1/dt))  #number of time grid points 
+    nx=int(np.around(1/dx))  # number of spatial grid points
+    t=np.linspace(0,1,nt+1)  #time grid
+    x=np.linspace(0,1,nx+1)  #space grid 
+    u=np.zeros((nt+1,nx+1))  #initial values of solution =0
+    # set initial conditions 
+    for i in range (nx):
+        if ic =='a' or ic =='A' :
+      
+            if x[i]>=0 and x[i]<0.25:
+                u[0,i]=1
+            else:
+                u[0,i]=0
+        if ic=='b' or ic =='B':
+            u[0,i]=sin(4*pi*x[i])
+        if ic=='c' or ic=='C':
+            if x[i]>=0 and x[i]<0.2:
+                u[0,i]=0
+            elif x[i]>=0.2 and x[i]<0.3:
+                u[0,i]=1
+            elif x[i]>=0.3:
+                u[0,i]=0
+    for j in  range(0,nt):
+        for i in range(0,nx):
+            u[j+1,i]=u[j,i]-nu*(u[j,i+1]-u[j,i])
+            u[j+1,i]=0.5*(u[j,i]+u[j+1,i])-0.5*nu*(u[j+1,i]-u[j+1,i-1])
+    plt.plot(x,u[-1,:],label='maccormack')  #plots u at time=1.0 
+    return u
+#analytical soltion     
+def exac(nu,alpha,ic='a'):
+    dx=alpha*dt/nu #spacestep
+    nt=int(np.around(1/dt))  #number of time grid points 
+    nx=int(np.around(1/dx))  # number of spatial grid points
+    t=np.linspace(0,1,nt+1)  #time grid
+    x=np.linspace(0,1,nx+1)  #space grid 
+    u=np.zeros((nt+1,nx+1))  #initial values of solution =0
+    # solve eqn u(x-nu)
+    for i in range (nx):
+        if ic =='a' or ic =='A' :
+        
+            if x[i]>=0+0.5 and x[i]<0.25+0.5:
+                u[-1,i]=1
+            else :
+                u[-1,i]=0
+        if ic=='b' or ic =='B':
+            if x[i]>=0.5:
+                u[-1,i]=sin(4*pi*(x[i]-0.5))
+        if ic=='c' or ic=='C':
+            if x[i]>=0.0 and x[i]<0.7:
+                u[-1,i]=0
+            elif x[i]>=0.7 and x[i]<0.8:
+                u[-1,i]=1
+            else:
+                u[-1,i]=0
+    plt.plot(x,u[-1,:],label='analytical solution')
+    plt.xlabel('x')
+    plt.ylabel('u')
+    plt.title('dt={} , v={}'.format(dt,nu))
+    plt.legend()
+    plt.show()
+    return u
+
+nu=0.9    #cfl 
+alpha=0.5   
+dt=0.0001  #timestep 
+dx=alpha*dt/nu #spacestep
+nx=int(np.around(1/dx))  # number of spatial grid points
+x=np.linspace(0,1,nx+1)  #space grid 
+
+uu=upwind(nu,dt,alpha,'a')
+ulw=laxwendroff(nu,dt,alpha,'a')
+ul=lax(nu,dt,alpha,'a')
+um=mccormack(nu,dt,alpha,'a')
+ue=exac(nu,alpha,'a')
+plt.plot(x,abs(ue[-1,:]-um[-1,:]),label='MacCormack')
+plt.plot(x,abs(ue[-1,:]-ul[-1,:]),label='Lax')
+plt.plot(x,abs(ue[-1,:]-uu[-1,:]),label='Upwind')
+plt.plot(x,abs(ue[-1,:]-ulw[-1,:]),label='laxwendroff')
+plt.title('dt={} , v={}'.format(dt,nu))
+plt.xlabel('x')
+plt.ylabel('error')
+plt.legend()
+plt.show()
